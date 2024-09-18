@@ -160,9 +160,8 @@ export function DnDFileUploaderProvider({ workspace, children }) {
 }
 
 export default function DnDFileUploaderWrapper({ children }) {
-  const { onDrop, ready, dragging, setDragging } =
-    useContext(DndUploaderContext);
-  const { getRootProps, getInputProps } = useDropzone({
+  const { onDrop, ready, dragging, setDragging } = useContext(DndUploaderContext);
+  const { getRootProps, getInputProps, inputRef } = useDropzone({
     onDrop,
     disabled: !ready,
     noClick: true,
@@ -170,6 +169,27 @@ export default function DnDFileUploaderWrapper({ children }) {
     onDragEnter: () => setDragging(true),
     onDragLeave: () => setDragging(false),
   });
+
+  useEffect(() => {
+    const handlePasteAnywhere = (e) => {
+      const items = e.clipboardData.items;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image/') !== -1) {
+          e.preventDefault();
+          const blob = items[i].getAsFile();
+          const fileName = blob.name !== "image.png" ? blob.name : `pasted-image.${blob.type.split('/')[1]}`;
+          const file = new File([blob], fileName, { type: blob.type });
+          onDrop([file], []);
+          break;
+        }
+      }
+    };
+
+    document.addEventListener('paste', handlePasteAnywhere);
+    return () => {
+      document.removeEventListener('paste', handlePasteAnywhere);
+    };
+  }, [onDrop]);
 
   return (
     <div
