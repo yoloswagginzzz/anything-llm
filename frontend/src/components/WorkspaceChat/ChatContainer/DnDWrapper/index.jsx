@@ -161,7 +161,8 @@ export function DnDFileUploaderProvider({ workspace, children }) {
 }
 
 export default function DnDFileUploaderWrapper({ children }) {
-  const { onDrop, ready, dragging, setDragging } = useContext(DndUploaderContext);
+  const { onDrop, ready, dragging, setDragging } =
+    useContext(DndUploaderContext);
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     disabled: !ready,
