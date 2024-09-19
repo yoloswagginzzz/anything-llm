@@ -53,6 +53,7 @@ const {
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 const { EncryptionManager } = require("../utils/EncryptionManager");
 const { BrowserExtensionApiKey } = require("../models/browserExtensionApiKey");
+const { SystemChats } = require("../models/systemChats");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -970,16 +971,8 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { offset = 0, limit = 20 } = reqBody(request);
-        const chats = await WorkspaceChats.whereWithData(
-          {},
-          limit,
-          offset * limit,
-          { id: "desc" }
-        );
-        const totalChats = await WorkspaceChats.count();
-        const hasPages = totalChats > (offset + 1) * limit;
-
-        response.status(200).json({ chats: chats, hasPages, totalChats });
+        const { chats, hasPages, totalChats } = await SystemChats.getChats(offset, limit);
+        response.status(200).json({ chats, hasPages, totalChats });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
