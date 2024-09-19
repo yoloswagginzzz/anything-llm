@@ -9,9 +9,7 @@ export function useImagePaste(onImagePaste) {
           e.preventDefault();
           const blob = items[i].getAsFile();
           const fileName =
-            blob.name !== "image.png"
-              ? blob.name
-              : `pasted-image.${blob.type.split("/")[1]}`;
+            blob.name || `pasted-image.${blob.type.split("/")[1]}`;
           const file = new File([blob], fileName, { type: blob.type });
           onImagePaste(file);
           break;
