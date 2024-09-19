@@ -12,7 +12,9 @@ export function useImagePaste(onImagePaste) {
             blob.name || `pasted-image.${blob.type.split("/")[1]}`;
           const file = new File([blob], fileName, { type: blob.type });
           onImagePaste(file);
-          break;
+
+          // Focus the input after paste
+          document.getElementById("chat-input")?.focus();
         }
       }
     };

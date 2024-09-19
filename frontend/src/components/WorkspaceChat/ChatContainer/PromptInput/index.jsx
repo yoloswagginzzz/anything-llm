@@ -135,6 +135,7 @@ export default function PromptInput({
                 value={promptInput}
                 className="cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
                 placeholder={"Send a message"}
+                id="chat-input"
               />
               {buttonDisabled ? (
                 <StopGenerationButton />
