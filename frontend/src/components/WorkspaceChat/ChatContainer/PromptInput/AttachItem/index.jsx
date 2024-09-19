@@ -1,7 +1,6 @@
 import useUser from "@/hooks/useUser";
 import { PaperclipHorizontal } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
-import { useEffect } from "react";
 
 /**
  * This is a simple proxy component that clicks on the DnD file uploader for the user.
@@ -10,30 +9,6 @@ import { useEffect } from "react";
 export default function AttachItem() {
   const { user } = useUser();
   if (!!user && user.role === "default") return null;
-
-  const handlePaste = (e) => {
-    const items = e.clipboardData.items;
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].type.indexOf('image') !== -1) {
-        const blob = items[i].getAsFile();
-        handleImagePaste(blob);
-        break;
-      }
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('paste', handlePaste);
-    return () => {
-      document.removeEventListener('paste', handlePaste);
-    };
-  }, []);
-
-  const handleImagePaste = (blob) => {
-    const file = new File([blob], "pasted-image.png", { type: "image/png" });
-    document.getElementById("dnd-chat-file-uploader").files = new FileList([file]);
-    document.getElementById("dnd-chat-file-uploader").dispatchEvent(new Event('change', { bubbles: true }));
-  };
 
   return (
     <>

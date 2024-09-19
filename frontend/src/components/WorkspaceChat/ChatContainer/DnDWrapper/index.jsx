@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import DndIcon from "./dnd-icon.png";
 import Workspace from "@/models/workspace";
 import useUser from "@/hooks/useUser";
+import { useImagePaste } from "@/hooks/useImagePaste";
 
 export const DndUploaderContext = createContext();
 export const REMOVE_ATTACHMENT_EVENT = "ATTACHMENT_REMOVE";
@@ -161,7 +162,7 @@ export function DnDFileUploaderProvider({ workspace, children }) {
 
 export default function DnDFileUploaderWrapper({ children }) {
   const { onDrop, ready, dragging, setDragging } = useContext(DndUploaderContext);
-  const { getRootProps, getInputProps, inputRef } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     disabled: !ready,
     noClick: true,
@@ -170,26 +171,9 @@ export default function DnDFileUploaderWrapper({ children }) {
     onDragLeave: () => setDragging(false),
   });
 
-  useEffect(() => {
-    const handlePasteAnywhere = (e) => {
-      const items = e.clipboardData.items;
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].type.indexOf('image/') !== -1) {
-          e.preventDefault();
-          const blob = items[i].getAsFile();
-          const fileName = blob.name !== "image.png" ? blob.name : `pasted-image.${blob.type.split('/')[1]}`;
-          const file = new File([blob], fileName, { type: blob.type });
-          onDrop([file], []);
-          break;
-        }
-      }
-    };
-
-    document.addEventListener('paste', handlePasteAnywhere);
-    return () => {
-      document.removeEventListener('paste', handlePasteAnywhere);
-    };
-  }, [onDrop]);
+  useImagePaste((file) => {
+    onDrop([file], []);
+  });
 
   return (
     <div
